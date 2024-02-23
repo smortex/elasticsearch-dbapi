@@ -202,10 +202,13 @@ class TestDBAPI(unittest.TestCase):
         self.assertEqual(len(rows), 4)
 
     @patch("elasticsearch.Elasticsearch.__init__")
-    def test_auth(self, mock_elasticsearch):
+    def test_elasticsearch_auth(self, mock_elasticsearch):
         """
         DBAPI: test Elasticsearch is called with user password
         """
+        if self.driver_name == "opensearch":
+            return
+
         mock_elasticsearch.return_value = None
         self.connect_func(
             host="localhost", scheme="http", port=9200, user="user", password="password"
@@ -214,11 +217,30 @@ class TestDBAPI(unittest.TestCase):
             "http://localhost:9200/", http_auth=("user", "password")
         )
 
+    @patch("opensearchpy.OpenSearch.__init__")
+    def test_opensearch_auth(self, mock_opensearch):
+        """
+        DBAPI: test OpenSearch is called with user password
+        """
+        if self.driver_name != "opensearch":
+            return
+
+        mock_opensearch.return_value = None
+        self.connect_func(
+            host="localhost", scheme="http", port=9200, user="user", password="password"
+        )
+        mock_opensearch.assert_called_once_with(
+            "http://localhost:9200/", http_auth=("user", "password")
+        )
+
     @patch("elasticsearch.Elasticsearch.__init__")
-    def test_https(self, mock_elasticsearch):
+    def test_elasticsearch_https(self, mock_elasticsearch):
         """
         DBAPI: test Elasticsearch is called with https
         """
+        if self.driver_name == "opensearch":
+            return
+
         mock_elasticsearch.return_value = None
         self.connect_func(
             host="localhost",
@@ -228,6 +250,26 @@ class TestDBAPI(unittest.TestCase):
             port=9200,
         )
         mock_elasticsearch.assert_called_once_with(
+            "https://localhost:9200/", http_auth=("user", "password")
+        )
+
+    @patch("opensearchpy.OpenSearch.__init__")
+    def test_opensearch_https(self, mock_opensearch):
+        """
+        DBAPI: test OpenSearch is called with https
+        """
+        if self.driver_name != "opensearch":
+            return
+
+        mock_opensearch.return_value = None
+        self.connect_func(
+            host="localhost",
+            user="user",
+            password="password",
+            scheme="https",
+            port=9200,
+        )
+        mock_opensearch.assert_called_once_with(
             "https://localhost:9200/", http_auth=("user", "password")
         )
 
