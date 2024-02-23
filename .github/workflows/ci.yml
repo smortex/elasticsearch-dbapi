@@ -3,7 +3,7 @@ name: Python
 
 on:
   push:
-    branches: ['master']
+    branches: ['opensearch']
   pull_request:
     branches: ['master']
 
