@@ -68,6 +68,13 @@ jobs:
           discovery.type: single-node
         ports:
           - 49200:9200
+      opensearch:
+        image: opensearchproject/opensearch:2.12.0
+        env:
+          discovery.type: single-node
+          OPENSEARCH_INITIAL_ADMIN_PASSWORD: admin
+        ports:
+          - 59200:9200
 
     steps:
       - uses: actions/checkout@v2
@@ -121,3 +128,13 @@ jobs:
       - name: Upload code coverage
         run: |
           bash <(curl -s https://codecov.io/bash) -cF python
+      - name: Run tests on OpenSearch
+        run: |
+          export ES_DRIVER=opensearch
+          export ES_URI="https://admin:admin@localhost:59200"
+          export ES_PASSWORD=admin
+          export ES_PORT=59200
+          export ES_SCHEME=https
+          export ES_USER=admin
+          export ES_SUPPORT_DATETIME_PARSE=False
+          nosetests -v --with-coverage --cover-package=es es.tests

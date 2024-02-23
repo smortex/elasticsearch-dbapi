@@ -6,6 +6,7 @@ from unittest.mock import Mock, patch
 from es.elastic.sqlalchemy import ESDialect as ElasticDialect
 from es.exceptions import DatabaseError
 from es.opendistro.sqlalchemy import ESDialect as OpenDistroDialect
+from es.opensearch.sqlalchemy import ESDialect as OpenSearchDialect
 from es.tests.fixtures.fixtures import data1_columns, flights_columns
 from sqlalchemy import func, inspect, select
 from sqlalchemy.engine import create_engine
@@ -343,5 +344,11 @@ class TestQuote(unittest.TestCase):
     def test_opendistro(self) -> None:
         assert (
             OpenDistroDialect.preparer(dialect=OpenDistroDialect()).quote("DATE(123)")
+            == "`DATE(123)`"
+        )
+
+    def test_opensearch(self) -> None:
+        assert (
+            OpenSearchDialect.preparer(dialect=OpenSearchDialect()).quote("DATE(123)")
             == "`DATE(123)`"
         )

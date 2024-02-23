@@ -26,9 +26,17 @@ setup(
             "odelasticsearch = es.opendistro.sqlalchemy:ESHTTPDialect",
             "odelasticsearch.http = es.opendistro.sqlalchemy:ESHTTPDialect",
             "odelasticsearch.https = es.opendistro.sqlalchemy:ESHTTPSDialect",
+            "opensearch = es.opensearch.sqlalchemy:ESHTTPSDialect",
+            "opensearch.http = es.opensearch.sqlalchemy:ESHTTPDialect",
+            "opensearch.https = es.opensearch.sqlalchemy:ESHTTPSDialect",
         ]
     },
-    install_requires=["elasticsearch>7, <7.14", "packaging>=21.0", "sqlalchemy"],
+    install_requires=[
+        "elasticsearch>7, <7.14",
+        "opensearch-py>=2.0",
+        "packaging>=21.0",
+        "sqlalchemy",
+    ],
     extras_require={"opendistro": ["requests_aws4auth", "boto3"]},
     author="Preset Inc.",
     author_email="daniel@preset.io",
