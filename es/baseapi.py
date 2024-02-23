@@ -178,7 +178,7 @@ class BaseCursor:
     based on this mapping.
     """
 
-    def __init__(self, url: str, es: Union[Elasticsearch, OpenSearch], **kwargs):
+    def __init__(self, url: str, es: Any, **kwargs):
         """
         Base cursor constructor initializes common properties
         that are shared by opendistro and elastic. Child just

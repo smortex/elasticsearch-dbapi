@@ -4,8 +4,9 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import re
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
+from elasticsearch import Elasticsearch
 from es import exceptions
 from es.baseapi import (
     apply_parameters,
@@ -130,7 +131,9 @@ class Cursor(BaseCursor):
         "select 1": "get_valid_select_one",
     }
 
-    def __init__(self, url: str, es: OpenSearch, **kwargs: Any) -> None:
+    def __init__(
+        self, url: str, es: Union[Elasticsearch, OpenSearch], **kwargs: Any
+    ) -> None:
         super().__init__(url, es, **kwargs)
         self.sql_path = kwargs.get("sql_path") or "_plugins/_sql"
         # Opendistro SQL v2 flag

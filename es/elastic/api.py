@@ -1,5 +1,5 @@
 import re
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from elasticsearch import Elasticsearch, exceptions as es_exceptions
 from es import exceptions
@@ -12,6 +12,7 @@ from es.baseapi import (
     get_description_from_columns,
     Type,
 )
+from opensearchpy import OpenSearch
 from packaging import version
 
 
@@ -85,7 +86,9 @@ class Cursor(BaseCursor):
         "show valid_views": "get_valid_view_names",
     }
 
-    def __init__(self, url: str, es: Elasticsearch, **kwargs: Any) -> None:
+    def __init__(
+        self, url: str, es: Union[Elasticsearch, OpenSearch], **kwargs: Any
+    ) -> None:
         super().__init__(url, es, **kwargs)
         self.sql_path = kwargs.get("sql_path") or "_sql"
 
