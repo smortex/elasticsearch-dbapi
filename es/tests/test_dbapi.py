@@ -4,7 +4,8 @@ from unittest.mock import patch
 
 from es.elastic.api import connect as elastic_connect, Type
 from es.exceptions import Error, NotSupportedError, OperationalError, ProgrammingError
-from es.opendistro.api import connect as open_connect
+from es.opendistro.api import connect as opendistro_connect
+from es.opensearch.api import connect as opensearch_connect
 
 
 def convert_bool(value: str) -> bool:
@@ -27,8 +28,12 @@ class TestDBAPI(unittest.TestCase):
 
         if self.driver_name == "elasticsearch":
             self.connect_func = elastic_connect
+        elif self.driver_name == "odelasticsearch":
+            self.connect_func = opendistro_connect
+        elif self.driver_name == "opensearch":
+            self.connect_func = opensearch_connect
         else:
-            self.connect_func = open_connect
+            raise "Unsupporded driver"
         self.conn = self.connect_func(
             host=self.host,
             port=self.port,
