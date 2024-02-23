@@ -72,7 +72,7 @@ jobs:
         image: opensearchproject/opensearch:2.12.0
         env:
           discovery.type: single-node
-          OPENSEARCH_INITIAL_ADMIN_PASSWORD: admin
+          OPENSEARCH_INITIAL_ADMIN_PASSWORD: 1IRre6kEEPe3xywScVp4eiXW6Hv1zha5xhADClaI2ZtdFDBFKP8yncIAXHBM2TNy
         ports:
           - 59200:9200
 
@@ -131,8 +131,8 @@ jobs:
       - name: Run tests on OpenSearch
         run: |
           export ES_DRIVER=opensearch
-          export ES_URI="https://admin:admin@localhost:59200"
-          export ES_PASSWORD=admin
+          export ES_URI="https://admin:1IRre6kEEPe3xywScVp4eiXW6Hv1zha5xhADClaI2ZtdFDBFKP8yncIAXHBM2TNy@localhost:59200"
+          export ES_PASSWORD=1IRre6kEEPe3xywScVp4eiXW6Hv1zha5xhADClaI2ZtdFDBFKP8yncIAXHBM2TNy
           export ES_PORT=59200
           export ES_SCHEME=https
           export ES_USER=admin
