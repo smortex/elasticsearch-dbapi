@@ -5,6 +5,7 @@ from urllib import parse
 from elasticsearch import Elasticsearch
 from elasticsearch import exceptions as es_exceptions
 from es import exceptions
+from opensearchpy import OpenSearch
 
 
 from .const import DEFAULT_FETCH_SIZE, DEFAULT_SCHEMA, DEFAULT_SQL_PATH
@@ -129,7 +130,7 @@ class BaseConnection(object):
         self.cursors: List[BaseCursor] = []
         self.kwargs = kwargs
         # Subclass needs to initialize Elasticsearch
-        self.es: Optional[Elasticsearch] = None
+        self.es: Optional[Elasticsearch | OpenSearch] = None
 
     @check_closed
     def close(self):
@@ -177,14 +178,14 @@ class BaseCursor:
     based on this mapping.
     """
 
-    def __init__(self, url: str, es: Elasticsearch, **kwargs):
+    def __init__(self, url: str, es: Elasticsearch | OpenSearch, **kwargs):
         """
         Base cursor constructor initializes common properties
         that are shared by opendistro and elastic. Child just
         override the sql_path since they differ on each distribution
 
         :param url: The connection URL
-        :param es: An initialized Elasticsearch object
+        :param es: An initialized Elasticsearch/OpenSearch object
         :param kwargs: connection string query arguments
         """
         self.url = url
