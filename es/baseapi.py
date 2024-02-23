@@ -1,5 +1,5 @@
 from collections import namedtuple
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 from urllib import parse
 
 from elasticsearch import Elasticsearch
@@ -130,7 +130,7 @@ class BaseConnection(object):
         self.cursors: List[BaseCursor] = []
         self.kwargs = kwargs
         # Subclass needs to initialize Elasticsearch
-        self.es: Optional[Elasticsearch | OpenSearch] = None
+        self.es: Optional[Union[Elasticsearch, OpenSearch]] = None
 
     @check_closed
     def close(self):
@@ -178,7 +178,7 @@ class BaseCursor:
     based on this mapping.
     """
 
-    def __init__(self, url: str, es: Elasticsearch | OpenSearch, **kwargs):
+    def __init__(self, url: str, es: Union[Elasticsearch, OpenSearch], **kwargs):
         """
         Base cursor constructor initializes common properties
         that are shared by opendistro and elastic. Child just
