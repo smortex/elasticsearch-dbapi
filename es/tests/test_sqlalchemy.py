@@ -110,7 +110,7 @@ class TestSQLAlchemy(unittest.TestCase):
         """
         SQLAlchemy: Test get_columns exclude arrays (elastic only)
         """
-        if self.driver_name == "odelasticsearch":
+        if self.driver_name != "elasticsearch":
             return
         metadata = MetaData()
         metadata.reflect(bind=self.engine)
@@ -142,7 +142,7 @@ class TestSQLAlchemy(unittest.TestCase):
 
     def test_get_columns_exclude_geo_point(self):
         """
-        SQLAlchemy: Test get_columns exclude geo point (odelasticsearch only)
+        SQLAlchemy: Test get_columns exclude geo point (odelasticsearch, opensearch only)
         """
         if self.driver_name == "elasticsearch":
             return
@@ -191,17 +191,18 @@ class TestSQLAlchemy(unittest.TestCase):
         """
         SQLAlchemy: test Elasticsearch is called AWS4Auth
         """
-        if self.driver_name == "odelasticsearch":
+        if self.driver_name != "odelasticsearch":
+            return
 
-            mock_aws4auth.return_value = None
-            self.engine = create_engine(
-                "odelasticsearch+http://aws_access_key_x:aws_secret_key_y@"
-                "localhost:9200/?aws_keys=1&aws_region=us-west-2"
-            )
-            self.connection = self.engine.connect()
-            mock_aws4auth.assert_called_once_with(
-                "aws_access_key_x", "aws_secret_key_y", "us-west-2", "es"
-            )
+        mock_aws4auth.return_value = None
+        self.engine = create_engine(
+            "odelasticsearch+http://aws_access_key_x:aws_secret_key_y@"
+            "localhost:9200/?aws_keys=1&aws_region=us-west-2"
+        )
+        self.connection = self.engine.connect()
+        mock_aws4auth.assert_called_once_with(
+            "aws_access_key_x", "aws_secret_key_y", "us-west-2", "es"
+        )
 
     @patch("requests_aws4auth.AWS4Auth.__init__")
     def test_opendistro_aws_profile(self, mock_aws4auth):
