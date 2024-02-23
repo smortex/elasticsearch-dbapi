@@ -17,7 +17,7 @@ from es.baseapi import (
 )
 from es.const import DEFAULT_SCHEMA
 from opensearchpy import OpenSearch, RequestsHttpConnection
-from opensearchpy.exceptions import ConnectionError
+from opensearchpy.exceptions import ConnectionError, NotFoundError
 
 
 def connect(
@@ -269,26 +269,29 @@ class Cursor(BaseCursor):
     def execute(
         self, operation: str, parameters: Optional[Dict[str, Any]] = None
     ) -> "BaseCursor":
-        cursor = self.custom_sql_to_method_dispatcher(operation)
-        if cursor:
-            return cursor
+        try:
+            cursor = self.custom_sql_to_method_dispatcher(operation)
+            if cursor:
+                return cursor
 
-        re_table_name = re.match("SHOW VALID_COLUMNS FROM (.*)", operation)
-        if re_table_name:
-            return self.get_valid_columns(re_table_name[1])
+            re_table_name = re.match("SHOW VALID_COLUMNS FROM (.*)", operation)
+            if re_table_name:
+                return self.get_valid_columns(re_table_name[1])
 
-        query = apply_parameters(operation, parameters)
-        results = self.elastic_query(query)
+            query = apply_parameters(operation, parameters)
+            results = self.elastic_query(query)
 
-        rows = [tuple(row) for row in results.get("datarows", [])]
-        columns = results.get("schema")
-        if not columns:
-            raise exceptions.DataError(
-                "Missing columns field, maybe it's an elastic sql ep"
-            )
-        self._results = rows
-        self.description = get_description_from_columns(columns)
-        return self
+            rows = [tuple(row) for row in results.get("datarows", [])]
+            columns = results.get("schema")
+            if not columns:
+                raise exceptions.DataError(
+                    "Missing columns field, maybe it's an elastic sql ep"
+                )
+            self._results = rows
+            self.description = get_description_from_columns(columns)
+            return self
+        except NotFoundError as e:
+            raise exceptions.ProgrammingError from e
 
     def sanitize_query(self, query: str) -> str:
         query = query.replace('"', "")
