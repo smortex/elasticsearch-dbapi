@@ -5,6 +5,7 @@ from urllib import parse
 from elasticsearch import Elasticsearch
 from elasticsearch import exceptions as es_exceptions
 from es import exceptions
+from opensearchpy import exceptions as os_exceptions
 from opensearchpy import OpenSearch
 
 
@@ -321,6 +322,8 @@ class BaseCursor:
             raise exceptions.OperationalError("Error connecting to Elasticsearch")
         except es_exceptions.RequestError as ex:
             raise exceptions.ProgrammingError(f"Error ({ex.error}): {ex.info}")
+        except os_exceptions.ConnectionError:
+            raise exceptions.OperationalError("Error connecting to OpenSearch")
         # When method is HEAD and code is 404 perform request returns True
         # So response is Union[bool, Any]
         if isinstance(response, bool):
